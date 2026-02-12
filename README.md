@@ -21,6 +21,7 @@ The model addresses the highly imbalanced nature of financial fraud data using a
 
 ### Model Evaluation (Confusion Matrix)
 The confusion matrix below demonstrates the model's ability to distinguish between valid transactions and actual fraud cases, minimizing false negatives.
+
 <img src="screenshots/confusion_matrix.png" alt="Confusion Matrix" width="500"/>
 <br>
 
