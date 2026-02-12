@@ -40,59 +40,42 @@ class PredictFraud(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=400)
 
-
 def dashboard_view(request):
     result = None
     
     if request.method == 'POST':
         try:
-          
-            amount_str = request.POST.get('amount')
-            oldbalanceOrg_str = request.POST.get('oldbalanceOrg')
-            newbalanceOrig_str = request.POST.get('newbalanceOrig')
+            
+            amount = float(request.POST.get('amount', 0))
+            oldbalanceOrg = float(request.POST.get('oldbalanceOrg', 0))
+            newbalanceOrig = float(request.POST.get('newbalanceOrig', 0)) 
             type_val = request.POST.get('type')
 
-          
-            amount = float(amount_str) if amount_str else 0.0
-            oldbalanceOrg = float(oldbalanceOrg_str) if oldbalanceOrg_str else 0.0
-            newbalanceOrig = float(newbalanceOrig_str) if newbalanceOrig_str else 0.0
-
             input_data = {
-                'step': 1,
-                'amount': amount,
-                'oldbalanceOrg': oldbalanceOrg,
-                'newbalanceOrig': newbalanceOrig,
-                'oldbalanceDest': 0.0,
-                'newbalanceDest': 0.0,
-                'nameOrig': 'Unknown', 
-                'nameDest': 'Unknown'
+                'step': 1, 'amount': amount,
+                'oldbalanceOrg': oldbalanceOrg, 'newbalanceOrig': newbalanceOrig,
+                'oldbalanceDest': 0.0, 'newbalanceDest': 0.0,
+                'nameOrig': 'Unknown', 'nameDest': 'Unknown'
             }
-            
             df = pd.DataFrame([input_data])
             
-          
             if type_val in model_columns:
                 df[type_val] = 1
-                
-           
             df = df.reindex(columns=model_columns, fill_value=0)
 
             if model:
                 prediction = model.predict(df)[0]
                 probability = model.predict_proba(df)[0][1]
-
-            
+                
                 result = {
                     'is_fraud': prediction == 1,
                     'probability': round(probability * 100, 2),
-                    'type': type_val,      
-                    'amount': amount     
+                    'type': type_val,
+                    'amount': amount,
+                    'oldbalanceOrg': oldbalanceOrg, 
+                    'newbalanceOrig': newbalanceOrig 
                 }
-            else:
-                result = {'error': "Model file not found. Check server logs."}
-
         except Exception as e:
-            print(f"Error in Dashboard: {e}")
-            result = {'error': "Invalid input. Please check your numbers."}
+            print(f"Error: {e}")
 
     return render(request, 'main/dashboard.html', {'result': result})
