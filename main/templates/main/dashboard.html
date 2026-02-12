@@ -171,7 +171,6 @@
             document.getElementById('newbalanceOrig').value = newBal.toFixed(2);
         }
 
-        // On Page Load: Force calculation so the grey box isn't empty if data exists
         window.onload = function() {
             if(document.getElementById('amount').value !== "") {
                 autoCalculate();
